@@ -4,7 +4,11 @@ import IRepository from "./IRepository.mjs";
 
 class SuperHeroeRepository extends IRepository {
   async obtenerPorId(id) {
-    return await SuperHero.findById(id);
+    try {
+      return await SuperHero.findById(id);
+    } catch (e) {
+      return;
+    }
   }
 
   async obtenerTodos() {
@@ -14,22 +18,30 @@ class SuperHeroeRepository extends IRepository {
   async buscarPorAtributo(atributo, valor) {
     let query = {};
 
-    const type = SuperHero.schema.path(atributo);
-    if (type instanceof mongoose.Schema.Types.Number) {
-      query = { [atributo]: valor };
-    } else {
-      query = { [atributo]: { $regex: new RegExp(valor, "i") } };
-    }
+    try {
+      const atributoType = SuperHero.schema.path(atributo);
+      if (atributoType instanceof mongoose.Schema.Types.Number) {
+        query = { [atributo]: { $eq: valor } };
+      } else {
+        query = { [atributo]: { $regex: new RegExp(valor, "i") } };
+      }
 
-    return await SuperHero.find(query);
+      return await SuperHero.find(query);
+    } catch (e) {
+      return [];
+    }
   }
 
   async obtenerMayoresDe30() {
-    return await SuperHero.find({
-      edad: { $gt: 30 },
-      planetaOrigen: "Tierra",
-      poderes: { $size: { $gte: 2 } },
-    });
+    try {
+      return await SuperHero.find({
+        edad: { $gt: 30 },
+        planetaOrigen: "Tierra",
+        "poderes.2": { $exists: true },
+      });
+    } catch (e) {
+      return [];
+    }
   }
 }
 

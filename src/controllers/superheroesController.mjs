@@ -12,11 +12,9 @@ import {
 export async function obtenerSuperheroePorIdController(req, res) {
   const { id } = req.params;
   const superheroe = await obtenerSuperheroePorId(id);
-  if (superheroe) {
-    return res.send(renderizarSuperheroe(superheroe));
-  } else {
-    return res.status(404).send({ mensaje: "Superhéroe no encontrado" });
-  }
+  return superheroe
+    ? res.send(renderizarSuperheroe(superheroe))
+    : res.status(404).send({ mensaje: "Superhéroe no encontrado" });
 }
 
 export async function obtenerTodosLosSuperheroesController(req, res) {
@@ -27,17 +25,17 @@ export async function obtenerTodosLosSuperheroesController(req, res) {
 export async function buscarSuperheroePorAtributoController(req, res) {
   const { atributo, valor } = req.params;
   const superheroes = await buscarSuperheroePorAtributo(atributo, valor);
-
-  if (superheroes.length > 0) {
-    return res.send(renderizarListaSuperheroes(superheroes));
-  } else {
-    return res
-      .status(404)
-      .send({ mensaje: "No se encontraron superhéroes con ese atributo" });
-  }
+  return superheroes.length > 0
+    ? res.send(renderizarListaSuperheroes(superheroes))
+    : res.status(404).send({ mensaje: "No se encontraron superhéroes con ese atributo" });
 }
 
 export async function obtenerSuperheroesMayoresDe30Controller(req, res) {
   const superheroes = await obtenerSuperheroesMayoresDe30();
-  return res.send(renderizarListaSuperheroes(superheroes));
+  console.log(superheroes);
+  return superheroes.length > 0
+    ? res.send(renderizarListaSuperheroes(superheroes))
+    : res
+        .status(404)
+        .send({ mensaje: "No se encontraron superhéroes con edad mayor a 30" });
 }
